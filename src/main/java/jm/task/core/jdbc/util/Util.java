@@ -9,23 +9,17 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class Util {
-    private final String userName = "root";
-    private final String password = "root";
-    private final String connectionUrl = "jdbc:mysql://localhost:3306/USERS";
-    private Connection connection;
-    private SessionFactory sessionFactory;
-    public Util(Boolean b) throws ClassNotFoundException, SQLException {
-        if (b) {
-            myHibernateSessionFactory();
-        } else {
-            myJdbcConnection();
-        }
-    }
-    private void myJdbcConnection() throws ClassNotFoundException, SQLException {
+    private static final String userName = "root";
+    private static final String password = "root";
+    private static final String connectionUrl = "jdbc:mysql://localhost:3306/USERS";
+
+
+    public static Connection myJdbcConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection(connectionUrl, userName, password);
+        Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
+        return connection;
     }
-    private void myHibernateSessionFactory() {
+    public static SessionFactory myHibernateSessionFactory() {
         Properties prop= new Properties();
         prop.setProperty("hibernate.connection.url", connectionUrl);
         prop.setProperty("dialect", "org.hibernate.dialect.MySQLDialect");
@@ -34,15 +28,10 @@ public class Util {
         prop.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         prop.setProperty("show_sql", "true");
         prop.setProperty("hibernate.current_session_context_class", "thread");
-        sessionFactory = new Configuration().addProperties(prop)
+        SessionFactory sessionFactory = new Configuration().addProperties(prop)
                 .addAnnotatedClass(User.class)
                 .buildSessionFactory();
-    }
-
-    public Connection getConnection() {
-        return connection;
-    }
-    public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
+
 }
